@@ -1,0 +1,63 @@
+# ================ Used Parameters =================
+# CommonFiles = Path to the CommonFiles Folder
+# OutputFolder = Folder Name, where to save the Output
+# OutputName = File Name of the output
+# lowEThreshold = Low Energy Threshold in keV
+# Activity = Source activity in Bq
+# T = Time Stop in sec. (if used)
+# nPrimaries = Number of primary particles (if used)
+# ==================================================
+
+/control/alias OutputFolder output
+/control/alias OutputName pet_test
+/control/alias lowEThreshold 200.
+/control/alias Activity 20000.
+/control/alias T 5.
+
+
+#   V I S U A L I Z A T I O N
+#/vis/disable
+#/control/execute /home/joshua/gate9_scripts/gate9_scripts_stephan/gate-simulations-phd/CommonFiles/visualization.mac
+
+#   M A T E R I A L S
+/gate/geometry/setMaterialDatabase /home/joshua/gate9_scripts/gate9_scripts_stephan/gate-simulations-phd/CommonFiles/GateMaterials.db
+
+#   G E O M E T R Y
+/control/execute geom_Scanner.mac
+#/control/execute geom_Phantom.mac
+
+
+#	D I G I T I Z E R
+/control/execute digi_singles.mac
+#/control/execute digi_coinc.mac
+
+#   P H Y S I C S
+#/control/execute {CommonFiles}/physics_EM.mac
+/control/execute /home/joshua/gate9_scripts/gate9_scripts_stephan/gate-simulations-phd/CommonFiles/PhysicsEMLivermorePolar.mac
+
+#	I N I T I A L I Z E
+/gate/run/initialize
+#/geometry/test/run
+
+#   S O U R C E
+#/control/execute source_Phantom.mac
+/control/execute source_Single.mac
+
+#	O U T P U T 
+/control/execute output.mac
+
+#  R A N D O M   E N G I N E  A N D  S E E D
+# JamesRandom Ranlux64 MersenneTwister
+/gate/random/setEngineName JamesRandom
+/gate/random/setEngineSeed auto
+/gate/random/verbose 1
+
+#	S T A R T
+/gate/application/setTimeSlice 0.01 s
+/gate/application/setTimeStart 0. s
+/gate/application/setTimeStop {T} s
+#/gate/application/setTotalNumberOfPrimaries {nPrimaries}
+/gate/application/startDAQ
+#/vis/enable
+#/vis/scene/add/axes
+exit

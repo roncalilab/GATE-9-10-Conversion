@@ -1,0 +1,194 @@
+# GATE 9 Macro - Repeated Volumes Test
+# Converted from OpenGATE 10 test017
+# Tests volume repetition with multiple placements
+
+# =====================================================
+# VERBOSE
+# =====================================================
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+
+# =====================================================
+# VISUALISATION (disabled)
+# =====================================================
+#/vis/disable
+
+# =====================================================
+# GEOMETRY
+# =====================================================
+
+# Material database
+/gate/geometry/setMaterialDatabase data/GateMaterials.db
+
+# World
+/gate/world/geometry/setXLength 1.5 m
+/gate/world/geometry/setYLength 1.5 m
+/gate/world/geometry/setZLength 1.5 m
+/gate/world/setMaterial Air
+
+# Air box container
+/gate/world/daughters/name AirBox
+/gate/world/daughters/insert box
+/gate/AirBox/geometry/setXLength 30 cm
+/gate/AirBox/geometry/setYLength 30 cm
+/gate/AirBox/geometry/setZLength 30 cm
+/gate/AirBox/placement/setTranslation 0.0 0.0 0.0 cm
+/gate/AirBox/setMaterial G4_AIR
+/gate/AirBox/vis/setColor blue
+/gate/AirBox/vis/setVisible 1
+
+# Define LYSO material (Lutetium-based scintillator)
+# Lu18 -> density 7.1 g/cm3
+# This is a simplified version - full LYSO is Lu2(1-x)Y2xSiO5:Ce
+# For proper LYSO, you'd need a more complete material definition
+/gate/geometry/setMaterialDatabase data/GateMaterials.db
+
+# Crystal - single volume that will be repeated
+/gate/AirBox/daughters/name crystal
+/gate/AirBox/daughters/insert box
+/gate/crystal/geometry/setXLength 1 cm
+/gate/crystal/geometry/setYLength 1 cm
+/gate/crystal/geometry/setZLength 1 cm
+/gate/crystal/setMaterial LYSO
+
+# Repeat the crystal at 4 different positions
+# Method 1: Use repeaters (linear or generic)
+# Note: GATE 9 repeaters work differently than OpenGATE 10's translation list
+
+# Crystal copy 1
+# /gate/crystal/repeaters/insert cubicArray
+# /gate/crystal/repeaters/cubicArray/setRepeatNumberX 1
+# /gate/crystal/repeaters/cubicArray/setRepeatNumberY 4
+# /gate/crystal/repeaters/cubicArray/setRepeatNumberZ 1
+# /gate/crystal/repeaters/cubicArray/setRepeatVector 0 2 0 cm
+
+# Adjust placement to match the desired positions
+# OpenGATE positions: [1,0,0], [0.2,2,0], [-0.2,4,0], [0,6,0] cm
+# This requires a custom approach since positions are not regular
+
+# Alternative: Place 4 separate crystals (explicit approach)
+# This is more straightforward for irregular positions
+
+# Remove the repeater approach and use explicit placement:
+# We'll create 4 separate crystal volumes
+
+# Crystal 1 at [1, 0, 0] cm
+/gate/AirBox/daughters/name crystal1
+/gate/AirBox/daughters/insert box
+/gate/crystal1/geometry/setXLength 1 cm
+/gate/crystal1/geometry/setYLength 1 cm
+/gate/crystal1/geometry/setZLength 1 cm
+/gate/crystal1/placement/setTranslation 1.0 0.0 0.0 cm
+/gate/crystal1/setMaterial LYSO
+/gate/crystal1/vis/setColor yellow
+/gate/crystal1/vis/setVisible 1
+
+# Crystal 2 at [0.2, 2, 0] cm
+/gate/AirBox/daughters/name crystal2
+/gate/AirBox/daughters/insert box
+/gate/crystal2/geometry/setXLength 1 cm
+/gate/crystal2/geometry/setYLength 1 cm
+/gate/crystal2/geometry/setZLength 1 cm
+/gate/crystal2/placement/setTranslation 0.2 2.0 0.0 cm
+/gate/crystal2/setMaterial LYSO
+/gate/crystal2/vis/setColor yellow
+/gate/crystal2/vis/setVisible 1
+
+# Crystal 3 at [-0.2, 4, 0] cm
+/gate/AirBox/daughters/name crystal3
+/gate/AirBox/daughters/insert box
+/gate/crystal3/geometry/setXLength 1 cm
+/gate/crystal3/geometry/setYLength 1 cm
+/gate/crystal3/geometry/setZLength 1 cm
+/gate/crystal3/placement/setTranslation -0.2 4.0 0.0 cm
+/gate/crystal3/setMaterial LYSO
+/gate/crystal3/vis/setColor yellow
+/gate/crystal3/vis/setVisible 1
+
+# Crystal 4 at [0, 6, 0] cm
+/gate/AirBox/daughters/name crystal4
+/gate/AirBox/daughters/insert box
+/gate/crystal4/geometry/setXLength 1 cm
+/gate/crystal4/geometry/setYLength 1 cm
+/gate/crystal4/geometry/setZLength 1 cm
+/gate/crystal4/placement/setTranslation 0.0 6.0 0.0 cm
+/gate/crystal4/setMaterial LYSO
+/gate/crystal4/vis/setColor yellow
+/gate/crystal4/vis/setVisible 1
+
+# =====================================================
+# PHYSICS
+# =====================================================
+/gate/physics/addPhysicsList QGSP_BERT_EMV
+
+# Production cuts
+/gate/physics/Gamma/SetCutInRegion world 1 mm
+/gate/physics/Electron/SetCutInRegion world 1 mm
+/gate/physics/Positron/SetCutInRegion world 1 mm
+/gate/physics/Proton/SetCutInRegion world 1 mm
+
+# =====================================================
+# ACTORS
+# =====================================================
+
+# Dose Actor - attached to first crystal
+# Note: In GATE 9, we attach to crystal1 (first instance)
+/gate/actor/addActor DoseActor dose
+/gate/actor/dose/attachTo crystal1
+/gate/actor/dose/stepHitType random
+/gate/actor/dose/setResolution 150 150 150
+/gate/actor/dose/setVoxelSize 1 1 1 mm
+/gate/actor/dose/setPosition 5 0 0 mm
+/gate/actor/dose/enableEdep true
+/gate/actor/dose/enableDose false
+/gate/actor/dose/enableNumberOfHits false
+/gate/actor/dose/save test017_repeater_stat/image.mhd
+/gate/actor/dose/saveEveryNSeconds 120
+
+# Simulation Statistics Actor
+/gate/actor/addActor SimulationStatisticActor Stats
+/gate/actor/Stats/save test017_repeater_stat/stat.txt
+/gate/actor/Stats/saveEveryNSeconds 120
+
+# =====================================================
+# INITIALISATION
+# =====================================================
+/gate/run/initialize
+
+# =====================================================
+# SOURCE
+# =====================================================
+
+/gate/source/addSource Default gps
+/gate/source/Default/gps/particle gamma
+/gate/source/Default/gps/ene/mono 0.511 MeV
+
+# Spherical source volume
+/gate/source/Default/gps/pos/type Volume
+/gate/source/Default/gps/pos/shape Sphere
+/gate/source/Default/gps/pos/radius 1 cm
+/gate/source/Default/gps/pos/centre 0 0 0 cm
+
+# Direction along +Y axis
+/gate/source/Default/gps/direction 0 1 0
+
+# Activity
+/gate/source/Default/setActivity 10000 Bq
+
+# =====================================================
+# TIMING
+# =====================================================
+
+# Single time slice: 0.0 to 1.0 seconds
+/gate/application/setTimeStart 0.0 s
+/gate/application/setTimeStop 1.0 s
+
+# =====================================================
+# START
+# =====================================================
+/gate/random/setEngineName MersenneTwister
+/gate/random/setEngineSeed 254123
+
+/gate/application/start

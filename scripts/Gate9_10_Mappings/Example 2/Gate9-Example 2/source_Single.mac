@@ -1,0 +1,26 @@
+# --------------------------------------------------------
+# S O U R C E
+/gate/source/addSource simplegamma
+/gate/source/simplegamma/setActivity {Activity} becquerel
+
+# POSITION
+/gate/source/simplegamma/gps/centre 0. 0. 0. cm
+# PARTICLE
+/gate/source/simplegamma/gps/particle gamma
+/gate/source/simplegamma/gps/energytype Mono
+/gate/source/simplegamma/gps/monoenergy 0.511 MeV
+# TYPE = Volume or Surface
+/gate/source/simplegamma/gps/type Volume
+# SHAPE = Sphere or Cylinder
+/gate/source/simplegamma/gps/shape Cylinder
+/gate/source/simplegamma/gps/radius 0.5 mm
+/gate/source/simplegamma/gps/halfz 0.5 mm
+
+# SET THE ANGULAR DISTRIBUTION OF EMISSION
+/gate/source/simplegamma/gps/angtype iso
+# SET MIN AND MAX EMISSION ANGLES
+/gate/source/simplegamma/gps/mintheta 0. deg
+/gate/source/simplegamma/gps/maxtheta 180. deg
+/gate/source/simplegamma/gps/minphi    0. deg
+/gate/source/simplegamma/gps/maxphi 360. deg
+#/gate/source/list

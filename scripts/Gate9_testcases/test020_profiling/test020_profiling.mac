@@ -1,0 +1,135 @@
+# GATE 9 Voxelized Geometry and Dose Test
+# Equivalent to OpenGate 10 test020
+
+#=====================================================
+# VERBOSE
+#=====================================================
+/gate/verbose Physic 0
+/gate/verbose Cuts 0
+/gate/verbose SD 0
+/gate/verbose Actions 0
+/gate/verbose Actor 0
+/gate/verbose Step 0
+/gate/verbose Error 1
+/gate/verbose Warning 1
+/gate/verbose Output 0
+/gate/verbose Beam 0
+/gate/verbose Volume 0
+/gate/verbose Image 0
+/gate/verbose Geometry 0
+
+#=====================================================
+# GEOMETRY
+#=====================================================
+/gate/geometry/setMaterialDatabase data/GateMaterials.db
+
+# World
+/gate/world/geometry/setXLength 1 m
+/gate/world/geometry/setYLength 1 m
+/gate/world/geometry/setZLength 1 m
+/gate/world/setMaterial G4_AIR
+
+# Fake box (parent volume with rotation)
+/gate/world/daughters/name fake
+/gate/world/daughters/insert box
+/gate/fake/geometry/setXLength 400 mm
+/gate/fake/geometry/setYLength 400 mm
+/gate/fake/geometry/setZLength 400 mm
+/gate/fake/placement/setTranslation 0 0 0 mm
+/gate/fake/placement/setRotationAxis 1 0 0
+/gate/fake/placement/setRotationAngle 2 deg
+/gate/fake/setMaterial G4_WATER
+/gate/fake/vis/setColor magenta
+/gate/fake/vis/setVisible 1
+
+# Patient voxelized phantom
+/gate/fake/daughters/name patient
+/gate/fake/daughters/insert ImageRegularParametrisedVolume
+
+# Image reader
+/gate/patient/geometry/setImage data/patient-4mm.mhd
+/gate/patient/geometry/setHUToMaterialFile data/patient-HU2mat-v1.txt
+
+# Dump label image (material indices)
+/gate/patient/geometry/buildAndDumpLabeledImage test020_profiling_ref/image.mhd
+
+# Position relative to fake volume
+/gate/patient/placement/setTranslation 0 0 0 mm
+
+#=====================================================
+# PHYSICS
+#=====================================================
+/gate/physics/addPhysicsList QGSP_BERT_EMV
+
+# Production cuts
+/gate/physics/Gamma/SetCutInRegion world 700 um
+/gate/physics/Electron/SetCutInRegion world 1 m
+/gate/physics/Positron/SetCutInRegion world 1 mm
+/gate/physics/Proton/SetCutInRegion world 1 m
+
+#=====================================================
+# DETECTORS (ACTORS)
+#=====================================================
+
+# Dose actor
+/gate/actor/addActor DoseActor dose
+/gate/actor/dose/attachTo patient
+/gate/actor/dose/stepHitType random
+/gate/actor/dose/setPosition 0 0 1 mm
+/gate/actor/dose/setResolution 100 100 100
+/gate/actor/dose/setVoxelSize 2 2 2 mm
+/gate/actor/dose/enableEdep true
+/gate/actor/dose/enableUncertaintyEdep true
+/gate/actor/dose/enableDose false
+/gate/actor/dose/enableNumberOfHits false
+/gate/actor/dose/save test020_profiling_ref/image.mhd
+/gate/actor/dose/saveEveryNSeconds 60
+
+# Statistics actor
+/gate/actor/addActor SimulationStatisticActor stat
+/gate/actor/stat/save test020_profiling_ref/stat.txt
+/gate/actor/stat/saveEveryNSeconds 60
+
+#=====================================================
+# INITIALISATION
+#=====================================================
+/gate/run/initialize
+
+# Additional commands after init
+/tracking/verbose 0
+
+#=====================================================
+# SOURCE
+#=====================================================
+
+# Source 1 - sphere source
+/gate/source/addSource source1 gps
+/gate/source/source1/setActivity 100000 Bq
+/gate/source/source1/gps/particle gamma
+/gate/source/source1/gps/energytype Mono
+/gate/source/source1/gps/monoenergy 150 keV
+
+# Position - sphere
+/gate/source/source1/gps/type Volume
+/gate/source/source1/gps/shape Sphere
+/gate/source/source1/gps/radius 10 mm
+/gate/source/source1/gps/centre 0 0 -150 mm
+
+# Direction - momentum along z
+/gate/source/source1/gps/angtype iso
+/gate/source/source1/gps/mintheta 0 deg
+/gate/source/source1/gps/maxtheta 0 deg
+/gate/source/source1/gps/minphi 0 deg
+/gate/source/source1/gps/maxphi 0 deg
+
+#=====================================================
+# ACQUISITION
+#=====================================================
+
+# Time parameters (adjust based on desired statistics)
+/gate/application/setTimeSlice 1 s
+/gate/application/setTimeStart 0 s
+/gate/application/setTimeStop 1 s
+
+# Start acquisition
+/gate/application/startDAQ

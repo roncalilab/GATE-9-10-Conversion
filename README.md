@@ -149,3 +149,4 @@ Gate9_10_Mappings/
 4. **Document dependencies** (required physics lists, materials, etc.)
 5. **Test your scripts** before uploading
 6. **Use clear naming conventions** for files and folders
+7. **Tell us if/ how you would like to be acknowledged**

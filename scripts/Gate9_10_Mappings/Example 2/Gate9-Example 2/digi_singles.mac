@@ -1,0 +1,18 @@
+# --------------------------------------------------
+# Singles Digitizer (Gate 9.3+)
+# Sensitive detector: fibre
+# --------------------------------------------------
+
+# Input hits
+/gate/digitizerMgr/fibre/SinglesDigitizer/Singles/setInputCollection Hits
+
+# ----------------------
+# READOUT
+/gate/digitizerMgr/fibre/SinglesDigitizer/Singles/insert readout
+/gate/digitizerMgr/fibre/SinglesDigitizer/Singles/readout/setDepth 1
+
+# ----------------------
+# ENERGY WINDOW
+/gate/digitizerMgr/fibre/SinglesDigitizer/Singles/insert energyFraming
+/gate/digitizerMgr/fibre/SinglesDigitizer/Singles/energyFraming/setMin {lowEThreshold} keV
+/gate/digitizerMgr/fibre/SinglesDigitizer/Singles/energyFraming/setMax 1000. keV

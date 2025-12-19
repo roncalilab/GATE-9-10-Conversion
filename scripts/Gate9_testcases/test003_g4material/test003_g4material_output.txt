@@ -1,0 +1,43 @@
+[G4] 
+[G4] **************************************************************
+[G4]  Geant4 version Name: geant4-11-02-patch-02    (21-June-2024)
+[G4]                        Copyright : Geant4 Collaboration
+[G4]                       References : NIM A 506 (2003), 250-303
+[G4]                                  : IEEE-TNS 53 (2006), 270-278
+[G4]                                  : NIM A 835 (2016), 186-225
+[G4]                              WWW : http://geant4.org/
+[G4] **************************************************************
+[G4] 
+[Core-0] Initialization of geometry
+[Core-0] Initialization of physics
+[Core-0] Initialization of actors
+[Core-0] 
+[Core-0] *******************************************************
+[Core-0]  GATE version 9.4 (2024)
+[Core-0]  Copyright : OpenGATE Collaboration
+[Core-0]  Reference : Phys. Med. Biol. 49(19) 4543-4561     2004 
+[Core-0]  Reference : Phys. Med. Biol. 56(4)  881-901       2011 
+[Core-0]  Reference : Med. Phys.       41(6)  1-14          2014
+[Core-0]  Reference : Phys. Med. Biol. 66(10) 1-23          2021
+[Core-0]  Reference : Frontiers in Physics, 12              2024
+[Core-0]  http://www.opengatecollaboration.org 
+[Core-0] *******************************************************
+[Core-0] 
+[Core-0] You are using Geant4 version 11.2.2
+[Core-0] Starting macro test003_g4material.mac
+[Physic-0] The following Geant4's physic-list is enabled :emstandard_opt3
+[Core-0] Initialization of geometry
+[Physic-1]   
+[Physic-1]  ----------------------------------------------------------
+[Physic-1]                      Ionization potential 
+[Physic-1]   - worldDefaultAir	 defaut value: I = 85.7 eV 
+[Physic-1]   - G4_Galactic	 defaut value: I = 21.8 eV 
+[Physic-1]   - G4_WATER	 defaut value: I = 78 eV 
+[Physic-1]   - G4_TISSUE-PROPANE	 defaut value: I = 59.5 eV 
+[Physic-1]  ----------------------------------------------------------
+[Core-0] Initialization of physics
+[Core-0] Initialization of actors
+GateOutputMgr.cc (l.555): No output module nor actor are enabled. This simulation will store no result at all.
+                     All output modules and actors have to be explicitly enabled now.
+                     However if you want to launch this simulation, use the command /gate/output/allowNoOutput
+

@@ -1,0 +1,79 @@
+# GATE 9 Macro - Simulation Statistics Actor Test
+# Converted from OpenGATE 10 test004
+
+# =====================================================
+# VERBOSE
+# =====================================================
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+
+# =====================================================
+# VISUALISATION (disabled)
+# =====================================================
+#/vis/disable
+
+# =====================================================
+# GEOMETRY
+# =====================================================
+
+# World
+/gate/geometry/setMaterialDatabase GateMaterials.db
+/gate/world/geometry/setXLength 3.0 m
+/gate/world/geometry/setYLength 3.0 m
+/gate/world/geometry/setZLength 3.0 m
+/gate/world/setMaterial Air
+
+# Waterbox
+/gate/world/daughters/name Waterbox
+/gate/world/daughters/insert box
+/gate/Waterbox/geometry/setXLength 40 cm
+/gate/Waterbox/geometry/setYLength 40 cm
+/gate/Waterbox/geometry/setZLength 40 cm
+/gate/Waterbox/placement/setTranslation 0.0 0.0 25.0 cm
+/gate/Waterbox/setMaterial Water
+
+# =====================================================
+# PHYSICS
+# =====================================================
+/gate/physics/addPhysicsList QGSP_BERT_EMV
+
+/gate/physics/Gamma/SetCutInRegion world 700 um
+/gate/physics/Electron/SetCutInRegion world 700 um
+/gate/physics/Positron/SetCutInRegion world 700 um
+/gate/physics/Proton/SetCutInRegion world 700 um
+
+# =====================================================
+# DETECTORS/ACTORS
+# =====================================================
+
+# Simulation Statistics Actor
+/gate/actor/addActor SimulationStatisticActor Stats
+/gate/actor/Stats/saveEveryNSeconds 20
+/gate/actor/Stats/save stat004_simple.txt
+
+# =====================================================
+# INITIALISATION
+# =====================================================
+/gate/run/initialize
+
+# =====================================================
+# SOURCE
+# =====================================================
+
+/gate/source/addSource Default gps
+/gate/source/Default/gps/particle gamma
+/gate/source/Default/gps/ene/mono 80 keV
+/gate/source/Default/gps/direction 0 0 1
+/gate/source/Default/gps/pos/type Point
+/gate/source/Default/gps/pos/centre 0 0 0 cm
+
+# =====================================================
+# START
+# =====================================================
+/gate/random/setEngineName MersenneTwister
+/gate/random/setEngineSeed auto
+
+/gate/application/setTotalNumberOfPrimaries 200000
+/gate/application/start

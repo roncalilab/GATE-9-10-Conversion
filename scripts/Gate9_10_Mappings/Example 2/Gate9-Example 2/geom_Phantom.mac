@@ -1,0 +1,14 @@
+# ------------------------------------------------------------------
+# P H A N T O M
+/gate/world/daughters/name my_phantom
+/gate/world/daughters/insert cylinder
+/gate/my_phantom/geometry/setRmax   2. mm
+/gate/my_phantom/geometry/setHeight 2. mm
+/gate/my_phantom/setMaterial Water
+/gate/my_phantom/vis/setColor grey
+/gate/my_phantom/vis/forceSolid
+/gate/my_phantom/placement/setTranslation 0 0 0 mm
+
+
+# P H A N T O M   D E F I N E D   A S   S E N S I T I V E
+/gate/my_phantom/attachPhantomSD

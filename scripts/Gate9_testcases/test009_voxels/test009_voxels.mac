@@ -1,0 +1,130 @@
+# GATE 9 Macro - Voxelized Phantom Test
+# Converted from OpenGATE 10 test009
+
+# =====================================================
+# VERBOSE
+# =====================================================
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+
+# =====================================================
+# VISUALISATION (disabled)
+# =====================================================
+#/vis/disable
+
+# =====================================================
+# GEOMETRY
+# =====================================================
+
+# Material database
+/gate/geometry/setMaterialDatabase data/GateMaterials.db
+
+# World
+/gate/world/geometry/setXLength 1.0 m
+/gate/world/geometry/setYLength 1.0 m
+/gate/world/geometry/setZLength 1.0 m
+/gate/world/setMaterial G4_AIR
+
+# Fake box - parent volume with rotation
+/gate/world/daughters/name fake
+/gate/world/daughters/insert box
+/gate/fake/geometry/setXLength 40 cm
+/gate/fake/geometry/setYLength 40 cm
+/gate/fake/geometry/setZLength 40 cm
+/gate/fake/placement/setRotationAxis 1 0 0
+/gate/fake/placement/setRotationAngle 20 deg
+/gate/fake/setMaterial G4_AIR
+/gate/fake/vis/setColor magenta
+/gate/fake/vis/setVisible 1
+
+# Voxelized patient phantom
+/gate/fake/daughters/name patient
+/gate/fake/daughters/insert ImageNestedParametrisedVolume
+
+# Image file
+/gate/patient/geometry/setImage data/patient-4mm.mhd
+
+# HU to material conversion
+/gate/patient/geometry/setHUToMaterialFile data/patient-HU2mat-v1.txt
+
+
+# =====================================================
+# PHYSICS
+# =====================================================
+/gate/physics/addPhysicsList QGSP_BERT_EMV
+
+# Global production cuts
+/gate/physics/Gamma/SetCutInRegion world 1 mm
+/gate/physics/Electron/SetCutInRegion world 1 mm
+/gate/physics/Positron/SetCutInRegion world 1 mm
+/gate/physics/Proton/SetCutInRegion world 1 mm
+
+# Region-specific cut for patient (electron cut = 3 mm)
+/gate/physics/Electron/SetCutInRegion patient 3 mm
+
+# =====================================================
+# ACTORS
+# =====================================================
+
+# Dose Actor attached to patient
+/gate/actor/addActor DoseActor dose_actor
+/gate/actor/dose_actor/attachTo patient
+/gate/actor/dose_actor/stepHitType random
+/gate/actor/dose_actor/setResolution 99 99 99
+/gate/actor/dose_actor/setVoxelSize 2 2 2 mm
+/gate/actor/dose_actor/setPosition 2 3 -2 mm
+/gate/actor/dose_actor/enableEdep true
+/gate/actor/dose_actor/enableUncertaintyEdep true
+/gate/actor/dose_actor/enableSquaredEdep true
+/gate/actor/dose_actor/enableDose false
+/gate/actor/dose_actor/enableNumberOfHits false
+/gate/actor/dose_actor/save test009_voxels_stat/dose.mhd
+/gate/actor/dose_actor/saveEveryNSeconds 120
+
+# Simulation Statistics Actor
+/gate/actor/addActor SimulationStatisticActor Stats
+/gate/actor/Stats/save test009_voxels_stat/stat.txt
+/gate/actor/Stats/saveEveryNSeconds 120
+
+# =====================================================
+# INITIALISATION
+# =====================================================
+/gate/run/initialize
+
+# =====================================================
+# SOURCE
+# =====================================================
+
+/gate/source/addSource mysource gps
+/gate/source/mysource/gps/particle proton
+/gate/source/mysource/gps/ene/mono 130 MeV
+
+# Spherical source position (10 mm radius)
+/gate/source/mysource/gps/pos/type Volume
+/gate/source/mysource/gps/pos/shape Sphere
+/gate/source/mysource/gps/pos/radius 10 mm
+/gate/source/mysource/gps/pos/centre 0 0 -14 cm
+
+# Beam direction along z-axis
+/gate/source/mysource/gps/direction 0 0 1
+
+# Activity-based source
+/gate/source/mysource/setActivity 10000 Bq
+
+# =====================================================
+# TIMING
+# =====================================================
+
+# Single time slice: 0.0 to 1.0 seconds
+/gate/application/setTimeStart 0.0 s
+/gate/application/setTimeStop 1.0 s
+
+# =====================================================
+# START
+# =====================================================
+/gate/random/setEngineName MersenneTwister
+/gate/random/setEngineSeed auto
+
+/gate/application/start

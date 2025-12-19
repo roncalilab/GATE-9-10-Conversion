@@ -1,0 +1,51 @@
+# GATE 9 Material Test Macro
+# Equivalent to OpenGate 10 material test
+
+/gate/geometry/setMaterialDatabase GateMaterials.db
+
+# Create a simple world for testing
+
+# Create test volumes with different materials
+/gate/world/daughters/name waterBox
+/gate/world/daughters/insert box
+/gate/waterBox/geometry/setXLength 10 cm
+/gate/waterBox/geometry/setYLength 10 cm
+/gate/waterBox/geometry/setZLength 10 cm
+/gate/waterBox/placement/setTranslation 0 0 0 cm
+/gate/waterBox/setMaterial G4_WATER
+
+/gate/world/daughters/name tissueBox
+/gate/world/daughters/insert box
+/gate/tissueBox/geometry/setXLength 10 cm
+/gate/tissueBox/geometry/setYLength 10 cm
+/gate/tissueBox/geometry/setZLength 10 cm
+/gate/tissueBox/placement/setTranslation 20 0 0 cm
+/gate/tissueBox/setMaterial G4_TISSUE-PROPANE
+
+# Physics list
+/gate/physics/addPhysicsList emstandard_opt3
+
+# Enable verbose output to see material information
+/gate/verbose Physic 1
+/gate/verbose Cuts 1
+/gate/verbose SD 1
+/gate/verbose Actions 1
+/gate/verbose Actor 1
+/gate/verbose Step 0
+/gate/verbose Error 1
+/gate/verbose Warning 1
+/gate/verbose Output 1
+/gate/verbose Beam 0
+/gate/verbose Volume 1
+/gate/verbose Image 1
+/gate/verbose Geometry 1
+
+# Initialize
+/gate/run/initialize
+
+
+/gate/application/noGlobalOutput
+/gate/application/setTimeStart 0 s
+/gate/application/setTimeStop 0 s
+
+/gate/application/startDAQ

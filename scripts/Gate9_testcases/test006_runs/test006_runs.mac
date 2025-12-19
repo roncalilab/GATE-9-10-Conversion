@@ -1,0 +1,147 @@
+# GATE 9 Macro - Multi-Source with Discontinuous Time Intervals
+# Converted from OpenGATE 10 multi-source timing test
+# This test uses THREE RUNS with discontinuous time intervals:
+#   Run 1: 0.0s - 0.5s
+#   Run 2: 0.5s - 1.0s
+#   Run 3: 1.5s - 2.5s (note: gap from 1.0s - 1.5s)
+
+# =====================================================
+# VERBOSE
+# =====================================================
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+
+# =====================================================
+# VISUALISATION (disabled)
+# =====================================================
+#/vis/disable
+
+# =====================================================
+# GEOMETRY
+# =====================================================
+
+# Material database
+/gate/geometry/setMaterialDatabase GateMaterials.db
+
+# World
+/gate/world/geometry/setXLength 3.0 m
+/gate/world/geometry/setYLength 3.0 m
+/gate/world/geometry/setZLength 3.0 m
+/gate/world/setMaterial Air
+
+# Waterbox
+/gate/world/daughters/name Waterbox
+/gate/world/daughters/insert box
+/gate/Waterbox/geometry/setXLength 20 cm
+/gate/Waterbox/geometry/setYLength 20 cm
+/gate/Waterbox/geometry/setZLength 20 cm
+/gate/Waterbox/placement/setTranslation 0.0 0.0 15.0 cm
+/gate/Waterbox/setMaterial Water
+
+# =====================================================
+# PHYSICS
+# =====================================================
+/gate/physics/addPhysicsList QGSP_BIC_EMY
+
+# Set production cuts
+/gate/physics/Gamma/SetCutInRegion world 1 mm
+/gate/physics/Electron/SetCutInRegion world 1 mm
+/gate/physics/Positron/SetCutInRegion world 1 mm
+/gate/physics/Proton/SetCutInRegion world 1 mm
+
+# =====================================================
+# ACTORS
+# =====================================================
+
+# Simulation Statistics Actor
+/gate/actor/addActor SimulationStatisticActor Stats
+/gate/actor/Stats/saveEveryNSeconds 120
+/gate/actor/Stats/save test006_runs_stat/stat006_runs.txt
+
+# =====================================================
+# INITIALISATION
+# =====================================================
+/gate/run/initialize
+
+# =====================================================
+# SOURCES
+# =====================================================
+
+# Source 1: 2000 particles, 150 MeV protons, starts at t=0
+# Active in: Run 1 (0.0-0.5s)
+/gate/source/addSource source1 gps
+/gate/source/source1/gps/particle proton
+/gate/source/source1/gps/ene/mono 150 MeV
+/gate/source/source1/gps/pos/type Beam
+/gate/source/source1/gps/pos/shape Circle
+/gate/source/source1/gps/pos/radius 10 mm
+/gate/source/source1/gps/pos/centre 0 0 0 cm
+/gate/source/source1/gps/direction 0 0 1
+# Convert n=2000 particles over 0.5s to activity: 2000/0.5 = 4000 Bq
+/gate/source/source1/setActivity 4000 Bq
+/gate/source/source1/setStartTime 0.0 s
+
+# Source 2: 2000 Bq activity, 120 MeV protons, starts at t=0.25s
+# Active in: Run 1 (0.25-0.5s), Run 2 (0.5-1.0s)
+/gate/source/addSource source2 gps
+/gate/source/source2/gps/particle proton
+/gate/source/source2/gps/ene/mono 120 MeV
+/gate/source/source2/gps/pos/type Beam
+/gate/source/source2/gps/pos/shape Circle
+/gate/source/source2/gps/pos/radius 5 mm
+/gate/source/source2/gps/pos/centre 0 0 0 cm
+/gate/source/source2/gps/direction 0 0 1
+/gate/source/source2/setActivity 2000 Bq
+/gate/source/source2/setStartTime 0.25 s
+
+# Source 3: 2400 particles, 150 MeV protons, starts at t=0.5s
+# Active in: Run 2 (0.5-1.0s), Run 3 (1.5-2.5s)
+/gate/source/addSource source3 gps
+/gate/source/source3/gps/particle proton
+/gate/source/source3/gps/ene/mono 150 MeV
+/gate/source/source3/gps/pos/type Beam
+/gate/source/source3/gps/pos/shape Circle
+/gate/source/source3/gps/pos/radius 10 mm
+/gate/source/source3/gps/pos/centre 0 0 0 cm
+/gate/source/source3/gps/direction 0 0 1
+# Convert n=2400 particles over 1.5s (0.5s in run2 + 1.0s in run3) to activity
+# 2400/1.5 = 1600 Bq
+/gate/source/source3/setActivity 1600 Bq
+/gate/source/source3/setStartTime 0.5 s
+
+# =====================================================
+# TIME SLICES - Using variable time slices
+# =====================================================
+
+# Use addSlice method for discontinuous time intervals
+/gate/application/setTimeStart 0.0 s
+
+# Slice 1: 0.0s to 0.5s (duration: 0.5s)
+/gate/application/addSlice 0.5 s
+
+# Slice 2: 0.5s to 1.0s (duration: 0.5s)
+/gate/application/addSlice 0.5 s
+
+# GAP HERE: 1.0s to 1.5s - no simulation (this is the "hole" in timeline)
+
+
+# Slice 3: 1.5s to 2.5s (duration: 1.0s)
+# The slice starts at 1.5s from beginning, but sources track absolute time
+/gate/application/addSlice 1.0 s
+
+# =====================================================
+# RANDOM ENGINE
+# =====================================================
+/gate/random/setEngineName MersenneTwister
+/gate/random/setEngineSeed 13241234
+
+# =====================================================
+# START ACQUISITION
+# =====================================================
+# Note: In GATE 9, time slices are continuous by default
+# To handle the gap (1.0-1.5s), we rely on source start times
+# Sources will only be active when their start_time is reached
+
+/gate/application/start

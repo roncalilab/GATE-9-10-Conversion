@@ -1,0 +1,106 @@
+# World
+
+/gate/world/geometry/setXLength 800. mm
+/gate/world/geometry/setYLength 800. mm
+/gate/world/geometry/setZLength 2000. mm
+/gate/world/vis/forceWireframe
+/gate/world/vis/setColor white
+#/gate/world/vis/setVisible 1
+
+# Cylindrical PET
+
+/gate/world/daughters/name cylindricalPET
+/gate/world/daughters/insert cylinder
+/gate/cylindricalPET/setMaterial Air
+/gate/cylindricalPET/geometry/setRmax 390 mm
+/gate/cylindricalPET/geometry/setRmin 320 mm
+/gate/cylindricalPET/geometry/setHeight 1620 mm
+/gate/cylindricalPET/vis/forceWireframe
+/gate/cylindricalPET/vis/setColor black
+#/gate/cylindricalPET/vis/setVisible 0
+
+
+# rsector: Bundle
+
+/gate/cylindricalPET/daughters/name bundle
+/gate/cylindricalPET/daughters/insert box
+/gate/bundle/placement/setTranslation 0 350 0 mm
+/gate/bundle/geometry/setXLength 16 mm
+/gate/bundle/geometry/setYLength 60 mm
+/gate/bundle/geometry/setZLength 1620 mm
+/gate/bundle/setMaterial Air
+/gate/bundle/vis/setColor red
+/gate/bundle/vis/forceWireframe
+/gate/bundle/vis/setVisible 1
+
+
+# module: fibre
+
+/gate/bundle/daughters/name fibre
+/gate/bundle/daughters/insert box
+/gate/fibre/placement/setTranslation 0 0 0 mm
+/gate/fibre/geometry/setXLength 4 mm
+/gate/fibre/geometry/setYLength 4 mm
+/gate/fibre/geometry/setZLength 1600 mm
+/gate/fibre/setMaterial EJ230
+/gate/fibre/vis/setColor blue
+/gate/fibre/vis/forceWireframe
+/gate/fibre/vis/setVisible 0
+
+
+
+# PMTS
+#/gate/bundle/daughters/name pmt1
+#/gate/bundle/daughters/insert box
+#/gate/pmt1/placement/setTranslation 0. 0. +805 mm
+#/gate/pmt1/geometry/setXLength 4 mm
+#/gate/pmt1/geometry/setYLength 4 mm
+#/gate/pmt1/geometry/setZLength 10 mm
+#/gate/pmt1/setMaterial Air
+#/gate/pmt1/vis/setColor yellow
+#/gate/pmt1/vis/setVisible 0
+
+#/gate/bundle/daughters/name pmt2
+#/gate/bundle/daughters/insert box
+#/gate/pmt2/placement/setTranslation 0. 0. -805 mm
+#/gate/pmt2/geometry/setXLength 4 mm
+#/gate/pmt2/geometry/setYLength 4 mm
+#/gate/pmt2/geometry/setZLength 10 mm
+#/gate/pmt2/setMaterial Air
+#/gate/pmt2/vis/setColor yellow
+#/gate/pmt2/vis/setVisible 0
+
+# Repeat rsector
+
+/gate/bundle/repeaters/insert ring
+/gate/bundle/ring/setRepeatNumber 125
+
+
+# Repeat module
+/gate/fibre/repeaters/insert cubicArray
+/gate/fibre/cubicArray/setRepeatNumberX 4
+/gate/fibre/cubicArray/setRepeatNumberY 15
+/gate/fibre/cubicArray/setRepeatNumberZ 1
+/gate/fibre/cubicArray/setRepeatVector 4. 4. 0. mm
+
+
+# Repeat PMT
+#/gate/pmt1/repeaters/insert cubicArray
+#/gate/pmt1/cubicArray/setRepeatNumberX 4
+#/gate/pmt1/cubicArray/setRepeatNumberY 4
+#/gate/pmt1/cubicArray/setRepeatNumberZ 1
+#/gate/pmt1/cubicArray/setRepeatVector 4. 4. 0. mm
+
+#/gate/pmt2/repeaters/insert cubicArray
+#/gate/pmt2/cubicArray/setRepeatNumberX 4
+#/gate/pmt2/cubicArray/setRepeatNumberY 4
+#/gate/pmt2/cubicArray/setRepeatNumberZ 1
+#/gate/pmt2/cubicArray/setRepeatVector 4. 4. 0. mm
+
+# A T T A C H M E N T S
+
+/gate/systems/cylindricalPET/rsector/attach bundle
+
+/gate/systems/cylindricalPET/crystal/attach fibre
+
+/gate/fibre/attachCrystalSD

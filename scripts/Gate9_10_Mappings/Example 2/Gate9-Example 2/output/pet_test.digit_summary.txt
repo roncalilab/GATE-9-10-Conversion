@@ -1,0 +1,4 @@
+# NumberOfHits = 121998
+# NumberOfRun = 500
+# NumberOfEvents = 100644
+# Singles = 23656

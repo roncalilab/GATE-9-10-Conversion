@@ -1,0 +1,17 @@
+#	O U T P U T   	ROOT
+#/gate/output/root/enable
+#/gate/output/root/setFileName rootOutput
+#/gate/output/root/setRootNtupleFlag 0
+#/gate/output/root/setRootHitFlag 0
+#/gate/output/root/setRootSinglesFlag 1
+#/gate/output/root/setRootCoincidencesFlag 1
+#/gate/output/root/setSaveRndmFlag 0
+/gate/output/tree/enable
+#/gate/output/tree/addFileName ./{OutputFolder}/{OutputName}.out.npy
+/gate/output/tree/addFileName ./{OutputFolder}/{OutputName}.out.root
+/gate/output/tree/addCollection Singles     #saved to /tmp/p.Singles.npy
+#/gate/output/tree/addCollection Coincidences
+
+/gate/output/summary/enable
+/gate/output/summary/setFileName ./{OutputFolder}/{OutputName}.digit_summary.txt
+/gate/output/summary/addCollection Singles

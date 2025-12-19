@@ -1,0 +1,26 @@
+# --------------------------------------------------------
+# S O U R C E
+/gate/source/addSource twogamma
+/gate/source/twogamma/setActivity {Activity} becquerel
+/gate/source/twogamma/setType backtoback
+# POSITION
+/gate/source/twogamma/gps/centre 0. 0. 0. cm
+# PARTICLE
+/gate/source/twogamma/gps/particle gamma
+/gate/source/twogamma/gps/energytype Mono
+/gate/source/twogamma/gps/monoenergy 0.511 MeV
+# TYPE = Volume or Surface
+/gate/source/twogamma/gps/type Volume
+# SHAPE = Sphere or Cylinder
+/gate/source/twogamma/gps/shape Cylinder
+/gate/source/twogamma/gps/radius 0.5 mm
+/gate/source/twogamma/gps/halfz 0.5 mm
+
+# SET THE ANGULAR DISTRIBUTION OF EMISSION
+/gate/source/twogamma/gps/angtype iso
+# SET MIN AND MAX EMISSION ANGLES
+/gate/source/twogamma/gps/mintheta 0. deg
+/gate/source/twogamma/gps/maxtheta 180. deg
+/gate/source/twogamma/gps/minphi    0. deg
+/gate/source/twogamma/gps/maxphi 360. deg
+/gate/source/list
