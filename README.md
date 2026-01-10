@@ -2,7 +2,7 @@
 
 This repository contains GATE simulation scripts for both GATE 9 and GATE 10 (OpenGate), including test cases and conversion mappings between versions.
 
-In case of questions, please contact: Joshua Dias Barreto (jjbarreto_at_ucdavis.edu) and Stephan Naunheim (snaunheim_at_ucdavis.edu)
+In case of questions, please contact us: https://roncalilab.engineering.ucdavis.edu
 
 ## Folder Structure
 
