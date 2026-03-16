@@ -1,0 +1,142 @@
+#config1
+/gate/geometry/setMaterialDatabase    GateMaterials.db
+
+#=====================================================
+# GEOMETRY
+#=====================================================
+/gate/world/geometry/setXLength       450. mm
+/gate/world/geometry/setYLength       450. mm
+/gate/world/geometry/setZLength       70. mm
+ 
+
+/gate/world/daughters/name                   ecat
+/gate/world/daughters/insert		      cylinder
+/gate/ecat/placement/setTranslation           0.0 0.0 0.0 mm
+/gate/ecat/geometry/setRmax                  200 mm
+/gate/ecat/geometry/setRmin                   127 mm
+/gate/ecat/geometry/setHeight                 32 mm #20
+/gate/ecat/setMaterial			Air
+
+/gate/ecat/vis/forceWireframe
+/gate/ecat/vis/setColor                       red
+
+#	BLOCK
+/gate/ecat/daughters/name                 Block
+/gate/ecat/daughters/insert                   box
+/gate/Block/placement/setTranslation  160 0 0 mm
+/gate/Block/geometry/setXLength       6.0 cm 
+/gate/Block/geometry/setYLength       1 cm 
+/gate/Block/geometry/setZLength       1.0 cm
+/gate/Block/setMaterial 	         Air
+/gate/Block/vis/setColor              white
+
+
+#	CRYSTAL
+/gate/Block/daughters/name                   crystal
+/gate/Block/daughters/insert                   box
+/gate/crystal/placement/setTranslation  0 0 0 mm
+/gate/crystal/geometry/setXLength       6.0 cm 
+/gate/crystal/geometry/setYLength       1 cm 
+/gate/crystal/geometry/setZLength       1.0 cm
+/gate/crystal/setMaterial 	         LYSO
+#/gate/ecat/vis/forceWireframe
+/gate/crystal/vis/setColor              white
+
+
+ #	R E P E A T    R S E C T O R 
+/gate/Block/repeaters/insert ring
+/gate/Block/ring/setFirstAngle 0. deg
+/gate/Block/ring/setRepeatNumber 80
+
+
+
+/gate/systems/ecat/block/attach Block
+/gate/systems/ecat/crystal/attach crystal
+
+/gate/crystal/attachCrystalSD
+
+#=====================================================
+# PHYSICS
+#=====================================================
+
+/gate/physics/addPhysicsList emstandard_opt3
+/gate/physics/processList Enabled
+/gate/physics/processList Initialized
+
+#=====================================================
+# INITIALISATION
+#=====================================================
+
+
+/gate/run/initialize
+
+#=====================================================
+# VISUALISATION
+#=====================================================
+
+/vis/disable
+#/control/execute visu_qt.mac
+
+
+#=====================================================
+#   D I G I T I Z E R: DETECTOR ELECTRONIC RESPONSE
+#===================================================== 
+
+/gate/digitizerMgr/crystal/SinglesDigitizer/Singles/insert                        adder
+/gate/digitizerMgr/crystal/SinglesDigitizer/Singles/adder/positionPolicy takeEnergyWinner
+
+# COINCIDENCES SORTER
+/gate/digitizerMgr/CoincidenceSorter/Coincidences/setInputCollection Singles_crystal 
+/gate/digitizerMgr/CoincidenceSorter/Coincidences/setWindow 3 ns
+/gate/digitizerMgr/CoincidenceSorter/Coincidences/minSectorDifference 1
+/gate/digitizerMgr/CoincidenceSorter/Coincidences/MultiplesPolicy killAll
+
+
+/gate/digitizerMgr/CoincidenceSorter/Coincidences/setPresortBufferSize 32
+
+/gate/digitizerMgr/CoincidenceSorter/Coincidences/allDigiOpenCoincGate true
+
+#=====================================================
+#  P A R T I C L E   S O U R C E
+#=====================================================
+/gate/source/addSource twogamma
+/gate/source/twogamma/setActivity 200 MBq # becquerel
+/gate/source/twogamma/setType backtoback
+/gate/source/twogamma/gps/particle gamma
+/gate/source/twogamma/gps/energytype Mono
+/gate/source/twogamma/gps/monoenergy 0.511 MeV
+/gate/source/twogamma/gps/type Point
+
+/gate/source/twogamma/gps/angtype iso
+/gate/source/twogamma/gps/mintheta 90 deg 
+/gate/source/twogamma/gps/maxtheta 90 deg 
+/gate/source/twogamma/gps/minphi 0. deg 
+/gate/source/twogamma/gps/maxphi 360. deg
+
+/gate/source/twogamma/gps/centre  0. 0. 0. cm
+
+
+#=====================================================
+#  D A T A   O U T P U T   
+#=====================================================
+
+/gate/output/root/enable
+/gate/output/root/setFileName             ../removeMultiples_Gate9.4
+/gate/output/root/setRootHitFlag         0
+/gate/output/root/setRootSinglesFlag      0
+/gate/output/root/setRootCoincidencesFlag 1
+#/gate/output/root/verbose 3
+
+
+
+#=====================================================
+#  R U N Parameters 
+#=====================================================
+/gate/random/setEngineName MersenneTwister
+/gate/random/setEngineSeed 123456789
+/gate/random/verbose 1
+
+/gate/application/setTimeSlice   0.0002 s # 2s
+/gate/application/setTimeStart   0. s
+/gate/application/setTimeStop    0.0002 s
+/gate/application/startDAQ
